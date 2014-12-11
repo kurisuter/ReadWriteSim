@@ -1,5 +1,8 @@
 package jus.poc.rw;
 
+import jus.poc.rw.v1.Reader;
+import jus.poc.rw.v1.Writer;
+
 /**
  * Main class for the Readers/Writers application. This class firstly creates a pool of read/write resources  
  * implementing interface IResource. Then it creates readers and writers operating on these resources.
@@ -60,7 +63,7 @@ public class Simulator{
 				try{
 					loadFromXML(ClassLoader.getSystemResourceAsStream(file));
 				}catch(Exception e){e.printStackTrace();}			
-			}
+			} 
 		}
 		Properties option = new Properties("jus/poc/rw/options/"+file);
 		version = option.getProperty("version");
@@ -82,7 +85,28 @@ public class Simulator{
 	}
 	public static void main(String... args) throws Exception{
 		// set the application parameters
+		System.out.println("lulu");
 		init((args.length==1)?args[0]:OPTIONFILENAME);
-		//to be completed
+		
+		Resource r1[] = new Resource[1];
+		
+		//create and run readers
+		for(int i = 0; i < nbReaders; i++)
+		{
+			new Thread(new Reader(new Aleatory(0,0),
+					new Aleatory(readerAverageVacationTime, readerDeviationVacationTime),
+					new Aleatory(readerAverageUsingTime, readerDeviationUsingTime), 
+					r1, null)).start();
+			
+		}
+		//create and run writters
+		for(int i = 0; i < nbWriters; i++)
+		{
+			new Thread( new Writer(new Aleatory(0,0),
+					new Aleatory(writerAverageVacationTime, writerDeviationVacationTime),
+					new Aleatory(writerAverageUsingTime,writerDeviationUsingTime),
+					r1, null)).start();
+		}
+		System.out.println("fin");
 	}
 }

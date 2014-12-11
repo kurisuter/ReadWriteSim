@@ -5,12 +5,17 @@ package jus.poc.rw;
 
 import jus.poc.rw.control.IObservator;
 import jus.poc.rw.deadlock.DeadLockException;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Define the gobal behavior of an actor in Reader/writer protocole.
  * @author morat 
  */
 public abstract class Actor extends Thread{
+	
+	//creation de la classe utilisé pour le lock de
+	static protected ReentrantReadWriteLock lock;
+	
 	private static int identGenerator=0;
 	/** the identificator of the actor */
 	protected int ident;
@@ -50,9 +55,23 @@ public abstract class Actor extends Thread{
 		// to be completed
 		for(accessRank=1; accessRank!=nbIteration; accessRank++) {
 			temporizationVacation(vacationLaw.next());
-			acquire();
+			try {
+				acquire();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (DeadLockException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			temporizationUse(useLaw.next());
-			release();
+			
+			try {
+				release();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 	/**
@@ -69,15 +88,24 @@ public abstract class Actor extends Thread{
 	}
 	/**
 	 * the acquisition stage of the resources.
+	 * @throws DeadLockException 
+	 * @throws InterruptedException 
 	 */
-	private void acquire(){
-		// to be completed
+	private void acquire() throws InterruptedException, DeadLockException{
+		for(int i =0; i< resources.length ; i++)
+		{
+			acquire(resources[i]);
+		}
 	}
 	/**
 	 * the release stage of the resources prevously acquired
+	 * @throws InterruptedException 
 	 */
-	private void release(){
-		// to be completed
+	private void release() throws InterruptedException{
+		for(int i =0; i< resources.length ; i++)
+		{
+			release(resources[i]);
+		}
 	}
 	/**
 	 * Restart the actor at the start of his execution, having returned all the resources acquired.
