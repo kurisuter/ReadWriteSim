@@ -91,15 +91,15 @@ public class Simulator{
 		 * Code pour la version 1
 		 */
 		// create & init : resources
-		KResource r1[] = new KResource[1];
-		r1[0] = new KResource();
+		//KResource r1[] = new KResource[1];
+		//r1[0] = new KResource();
 		
 		/**
 		 * Code pour la version 2
 		 */
 		// create & init : resources
-		//LResource r1[] = new LResource[1];
-		//r1[0] = new LResource(4);
+		LResource r1[] = new LResource[1];
+		r1[0] = new LResource(4);
 				
 		
 		/*

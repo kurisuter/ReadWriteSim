@@ -14,7 +14,7 @@ public class LResource implements IResource {
 	//nombre de reader présent
 	private int readerPresent;
 	//boolean si writer présent
-	private boolean writer;
+	private boolean writerPresent;
 	
 	private static int _ident=0;
 	private int ident;
@@ -24,7 +24,7 @@ public class LResource implements IResource {
 		this.nombreDeLecture = 0;
 		this.lectureMinimal = lectureMinimal;
 		this.readerPresent = 0;
-		this.writer = false;
+		this.writerPresent = false;
 		this.ident = LResource._ident;
 		LResource._ident++;
 	}
@@ -33,7 +33,7 @@ public class LResource implements IResource {
 	public synchronized void beginR(Actor arg0) throws InterruptedException,
 			DeadLockException {
 		ObservateurMadeInRICM.pereVert.requireResource(arg0, this);
-		while(writer)
+		while(writerPresent)
 		{
 			wait();
 		}
@@ -46,11 +46,11 @@ public class LResource implements IResource {
 	public synchronized void beginW(Actor arg0) throws InterruptedException,
 			DeadLockException {
 		ObservateurMadeInRICM.pereVert.requireResource(arg0, this);
-		while(readerPresent>0 && writer && nombreDeLecture < lectureMinimal)
+		while(readerPresent>0 || writerPresent || nombreDeLecture < lectureMinimal)
 		{
 			wait();
 		}
-		writer = true;
+		writerPresent = true;
 		ObservateurMadeInRICM.pereVert.acquireResource(arg0, this);
 		
 	}
@@ -64,7 +64,7 @@ public class LResource implements IResource {
 	@Override
 	public synchronized void endW(Actor arg0) throws InterruptedException {
 		ObservateurMadeInRICM.pereVert.releaseResource(arg0, this);
-		writer = false;
+		writerPresent = false;
 		nombreDeLecture = 0;
 		notifyAll();
 		
