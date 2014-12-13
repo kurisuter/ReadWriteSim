@@ -20,7 +20,7 @@ public class KResource implements IResource{
 	}
 	
 	@Override
-	public synchronized void beginR(Actor arg0) throws InterruptedException,
+	public void beginR(Actor arg0) throws InterruptedException,
 			DeadLockException {
 		ObservateurMadeInRICM.pereVert.requireResource(arg0, this);
 		this.lock.readLock().lock();
@@ -29,7 +29,7 @@ public class KResource implements IResource{
 	}
 
 	@Override
-	public synchronized void beginW(Actor arg0) throws InterruptedException,
+	public void beginW(Actor arg0) throws InterruptedException,
 			DeadLockException {
 		ObservateurMadeInRICM.pereVert.requireResource(arg0, this);
 		this.lock.writeLock().lock();
@@ -38,14 +38,14 @@ public class KResource implements IResource{
 	}
 
 	@Override
-	public synchronized void endR(Actor arg0) throws InterruptedException {
+	public void endR(Actor arg0) throws InterruptedException {
 		ObservateurMadeInRICM.pereVert.releaseResource(arg0, this);
 		this.lock.readLock().unlock();
 		
 	}
 
 	@Override
-	public synchronized void endW(Actor arg0) throws InterruptedException {
+	public void endW(Actor arg0) throws InterruptedException {
 		ObservateurMadeInRICM.pereVert.releaseResource(arg0, this);
 		this.lock.writeLock().unlock();
 		

@@ -87,7 +87,6 @@ public class Simulator{
 	public static void main(String... args) throws Exception{
 		// set the application parameters
 		init((args.length==1)?args[0]:OPTIONFILENAME);
-		
 		/**
 		 * Code pour la version 1
 		 */
