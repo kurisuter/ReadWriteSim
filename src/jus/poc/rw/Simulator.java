@@ -1,7 +1,7 @@
 package jus.poc.rw;
 
-import jus.poc.rw.v1.Reader;
-import jus.poc.rw.v1.Writer;
+import jus.poc.rw.v1.KResource;
+import jus.poc.rw.v2.LResource;
 
 /**
  * Main class for the Readers/Writers application. This class firstly creates a pool of read/write resources  
@@ -9,6 +9,7 @@ import jus.poc.rw.v1.Writer;
  * @author P.Morat & F.Boyer
  */
 public class Simulator{
+	
 	protected static final String OPTIONFILENAME = "option.xml";
 	/** the version of the protocole to be used */
 	protected static String version;
@@ -85,21 +86,38 @@ public class Simulator{
 	}
 	public static void main(String... args) throws Exception{
 		// set the application parameters
-		System.out.println("lulu");
 		init((args.length==1)?args[0]:OPTIONFILENAME);
 		
-		Resource r1[] = new Resource[1];
+		/**
+		 * Code pour la version 1
+		 */
+		// create & init : resources
+		KResource r1[] = new KResource[1];
+		r1[0] = new KResource();
 		
-		//create and run readers
+		/**
+		 * Code pour la version 2
+		 */
+		// create & init : resources
+		//LResource r1[] = new LResource[1];
+		//r1[0] = new LResource(4);
+				
+		
+		/*
+		 * Les reader comme els writter represente chacun un thread
+		 * on instancie donc un thread pour chaque reader et pour chaque writer
+		 * que l'on start directement 
+		 */
+		//create & run : readers
 		for(int i = 0; i < nbReaders; i++)
 		{
-			new Thread(new Reader(new Aleatory(0,0),
+			new Thread( new Reader(new Aleatory(0,0),
 					new Aleatory(readerAverageVacationTime, readerDeviationVacationTime),
 					new Aleatory(readerAverageUsingTime, readerDeviationUsingTime), 
 					r1, null)).start();
 			
 		}
-		//create and run writters
+		//create & run : writters
 		for(int i = 0; i < nbWriters; i++)
 		{
 			new Thread( new Writer(new Aleatory(0,0),
@@ -107,6 +125,5 @@ public class Simulator{
 					new Aleatory(writerAverageUsingTime,writerDeviationUsingTime),
 					r1, null)).start();
 		}
-		System.out.println("fin");
 	}
 }

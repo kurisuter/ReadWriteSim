@@ -5,16 +5,12 @@ package jus.poc.rw;
 
 import jus.poc.rw.control.IObservator;
 import jus.poc.rw.deadlock.DeadLockException;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Define the gobal behavior of an actor in Reader/writer protocole.
  * @author morat 
  */
 public abstract class Actor extends Thread{
-	
-	//creation de la classe utilisé pour le lock de
-	static protected ReentrantReadWriteLock lock;
 	
 	private static int identGenerator=0;
 	/** the identificator of the actor */
@@ -55,23 +51,14 @@ public abstract class Actor extends Thread{
 		// to be completed
 		for(accessRank=1; accessRank!=nbIteration; accessRank++) {
 			temporizationVacation(vacationLaw.next());
-			try {
-				acquire();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (DeadLockException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			try {acquire();} 
+				catch (InterruptedException e) {e.printStackTrace();} 
+				catch (DeadLockException e) {e.printStackTrace();}
+			try {Thread.sleep(30);}
+				catch (InterruptedException e1) {e1.printStackTrace();}
 			temporizationUse(useLaw.next());
-			
-			try {
-				release();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			try {release();} 
+				catch (InterruptedException e) {e.printStackTrace();}
 		}
 	}
 	/**
