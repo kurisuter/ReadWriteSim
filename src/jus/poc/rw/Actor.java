@@ -3,6 +3,10 @@
  */
 package jus.poc.rw;
 
+import java.awt.List;
+import java.util.LinkedList;
+import java.util.Random;
+
 import jus.poc.rw.control.IObservator;
 import jus.poc.rw.deadlock.DeadLockException;
 
@@ -27,6 +31,13 @@ public abstract class Actor extends Thread{
 	protected int nbIteration;
 	/** the rank of the last access done or under execution */
 	protected int accessRank;
+	/** the ramdomly quantity of ressource to acces */
+	protected Random accessLaw;
+	/** nombre de ressource pris sur l'instance */
+	protected int nbRessource;
+	/** liste des ressources que l'acteur attend */
+	protected LinkedList<IResource> listWaiting;
+	
 	/**
 	 * Constructor
 	 * @param useLaw the gaussian law for using delay
@@ -43,6 +54,8 @@ public abstract class Actor extends Thread{
 		nbIteration=iterationLaw.next();
 		setName(getClass().getSimpleName()+"-"+ident());
 		this.observator=observator;
+		this.accessLaw = new Random();
+		listWaiting = new LinkedList<IResource>();
 	}
 	/**
 	 * the behavior of an actor accessing to a resource.
@@ -65,7 +78,7 @@ public abstract class Actor extends Thread{
 	 * the temporization for using the ressources.
 	 */
 	private void temporizationUse(int delai) {
-		try{Thread.sleep(delai);}catch(InterruptedException e1){e1.printStackTrace();}		
+		try{Thread.sleep(delai+2000);}catch(InterruptedException e1){e1.printStackTrace();}		
 	}
 	/**
 	 * the temporization between access to the resources.
@@ -79,9 +92,12 @@ public abstract class Actor extends Thread{
 	 * @throws InterruptedException 
 	 */
 	private void acquire() throws InterruptedException, DeadLockException{
-		for(int i =0; i< resources.length ; i++)
+		Simulator.mixe(resources);
+		nbRessource = accessLaw.nextInt(resources.length);
+		for(int i=0; i< nbRessource;i++)
 		{
 			acquire(resources[i]);
+			try{Thread.sleep(2000);}catch(InterruptedException e1){e1.printStackTrace();}
 		}
 	}
 	/**
@@ -89,11 +105,31 @@ public abstract class Actor extends Thread{
 	 * @throws InterruptedException 
 	 */
 	private void release() throws InterruptedException{
-		for(int i =0; i< resources.length ; i++)
+		for(int i =0; i< nbRessource; i++)
 		{
 			release(resources[i]);
 		}
 	}
+	
+	/**
+	 * ajoute la resource a liste des ressource pour lesquels l'acteur attend
+	 * @param r : la resource pour laquel on attend
+	 */
+	public void addWaiting(IResource r)
+	{
+		listWaiting.add(r);
+	}
+	
+	/**
+	 * retire la resource de la liste des ressources pour lesquels l'acteur attend
+	 * @param r : la resource pour laquel on attend plus
+	 * @require : r est dans la liste
+	 */
+	public void removeWaiting(IResource r)
+	{
+		listWaiting.remove(r);
+	}
+	
 	/**
 	 * Restart the actor at the start of his execution, having returned all the resources acquired.
 	 * @param resource the resource at the origin of the deadlock.

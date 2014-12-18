@@ -1,8 +1,11 @@
 package jus.poc.rw.v4;
 
 import jus.poc.rw.Aleatory;
+import jus.poc.rw.Controleur;
+import jus.poc.rw.ObservateurMadeInRICM;
 import jus.poc.rw.Reader;
 import jus.poc.rw.Writer;
+import jus.poc.rw.v1.KResource;
 
 /**
  * Main class for the Readers/Writers application. This class firstly creates a pool of read/write resources  
@@ -95,9 +98,16 @@ public class Simulator{
 		 * on instancie donc un thread pour chaque reader et pour chaque writer
 		 * que l'on start directement 
 		 */
-		//create & run : readers
+		Detector d = new Detector();
+		YRessource r[] = new YRessource[2];
+		r[0] = new YRessource(d, new ObservateurMadeInRICM(new Controleur()));
+		r[1] = new YRessource(d, new ObservateurMadeInRICM(new Controleur()));
+		
 		for(int i = 0; i < nbReaders; i++)
 		{
+			YRessource r1[] = new YRessource[2];
+			r1[0] = r[0];
+			r1[1] = r[1];
 			new Thread( new Reader(new Aleatory(0,0),
 					new Aleatory(readerAverageVacationTime, readerDeviationVacationTime),
 					new Aleatory(readerAverageUsingTime, readerDeviationUsingTime), 
@@ -107,6 +117,9 @@ public class Simulator{
 		//create & run : writters
 		for(int i = 0; i < nbWriters; i++)
 		{
+			YRessource r1[] = new YRessource[2];
+			r1[0] = r[0];
+			r1[1] = r[1];
 			new Thread( new Writer(new Aleatory(0,0),
 					new Aleatory(writerAverageVacationTime, writerDeviationVacationTime),
 					new Aleatory(writerAverageUsingTime,writerDeviationUsingTime),

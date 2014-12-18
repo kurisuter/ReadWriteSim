@@ -27,7 +27,7 @@ public class RResource implements IResource{
 	private Condition cWriter = lock.newCondition();
 	
 	
-	public RResource(int lectureMinimal, IObservator obse)
+	public RResource(IObservator obse)
 	{
 		this.readerPresent = 0;
 		this.writerPresent = false;

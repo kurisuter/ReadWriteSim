@@ -27,7 +27,7 @@ public class Controleur {
 	}
 	private void testCoherance()
 	{
-		if (nbWritter>0 && nbReader >0)
+		if ((nbWritter>0 && nbReader >0) || nbWritter>1 || nbWritter<0 || nbReader<0 ) 
 		{
 			System.out.println(
 					"Shoryu   Ken  !!!!!!!!!!!!!!!!!!!!!!!\n "+

@@ -2,6 +2,7 @@ package jus.poc.rw;
 
 import jus.poc.rw.v1.KResource;
 import jus.poc.rw.v2.LResource;
+import jus.poc.rw.v3.RResource;
 import jus.poc.rw.v3.WResource;
 
 /**
@@ -39,6 +40,7 @@ public class Simulator{
 	protected static int writerDeviationIteration;
 	/** the chosen policy for priority */
 	protected static String policy;
+	
 	/**
 	 * make a permutation of the array
 	 * @param array the array to be mixed
@@ -93,21 +95,29 @@ public class Simulator{
 		 */
 		// create & init : resources
 		//KResource r1[] = new KResource[1];
-		//r1[0] = new KResource(null, new ObservateurMadeInRICM());
+		//r1[0] = new KResource(null, new ObservateurMadeInRICM(new Controleur()));
 		
 		/**
 		 * Code pour la version 2
 		 */
 		// create & init : resources
 		//LResource r1[] = new LResource[1];
-		//r1[0] = new LResource(null, new ObservateurMadeInRICM(),4);
+		//r1[0] = new LResource(null, new ObservateurMadeInRICM(new Controleur()),4);
 		
 		/**
 		 * Code pour la version 3 High Writter
 		 */
 		// create & init : resources
-		WResource r1[] = new WResource[1];
-		r1[0] = new WResource(null, new ObservateurMadeInRICM(new Controleur()));
+		//WResource r1[] = new WResource[1];
+		//r1[0] = new WResource(null, new ObservateurMadeInRICM(new Controleur()));
+		
+		/**
+		 * Code pour la version 3 Low Writter
+		 */
+		//create & init : resources
+		RResource r1[] = new RResource[1];
+		r1[0] = new RResource(new ObservateurMadeInRICM(new Controleur()));
+		
 		/*
 		 * Les reader comme els writter represente chacun un thread
 		 * on instancie donc un thread pour chaque reader et pour chaque writer
