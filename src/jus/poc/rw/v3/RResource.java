@@ -6,6 +6,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import jus.poc.rw.Actor;
 import jus.poc.rw.IResource;
+import jus.poc.rw.control.IObservator;
 import jus.poc.rw.deadlock.DeadLockException;
 
 //priorité faible pour les lecteurs
@@ -14,6 +15,7 @@ public class RResource implements IResource{
 	
 	private static int _ident=0;
 	private int ident;
+	private IObservator obs;
 	
 	//nombre de reader présent
 	private int readerPresent;
@@ -25,46 +27,64 @@ public class RResource implements IResource{
 	private Condition cWriter = lock.newCondition();
 	
 	
-	public RResource(int lectureMinimal)
+	public RResource(int lectureMinimal, IObservator obse)
 	{
 		this.readerPresent = 0;
 		this.writerPresent = false;
 		this.ident = RResource._ident;
 		RResource._ident++;
+		this.obs = obse;
 	}
 	
 	@Override
-	public synchronized void beginR(Actor arg0) throws InterruptedException,
+	public void beginR(Actor arg0) throws InterruptedException,
 			DeadLockException {
+		lock.lock();
+		obs.requireResource(arg0, this);
 		this.readerPresent++;
-		while(writerPresent)
+		if(writerPresent)
 		{
 			cReader.await();
 		}
+		obs.acquireResource(arg0, this);
+		lock.unlock();
 	}
 
 	@Override
-	public synchronized void beginW(Actor arg0) throws InterruptedException,
+	public void beginW(Actor arg0) throws InterruptedException,
 			DeadLockException {
+		lock.lock();
+		obs.requireResource(arg0, this);
 		while(readerPresent>0 || writerPresent)
 		{
 			cWriter.await();
 		}
-		writerPresent=true;	
+		writerPresent=true;
+		obs.acquireResource(arg0, this);
+		lock.unlock();
 	}
 
 	@Override
-	public synchronized void endR(Actor arg0) throws InterruptedException {
+	public void endR(Actor arg0) throws InterruptedException {
+		lock.lock();
+		obs.releaseResource(arg0, this);
 		this.readerPresent--;
-		cWriter.signal();
+		if(readerPresent==0)
+			cWriter.signal();
+		lock.unlock();
 		
 	}
 
 	@Override
-	public synchronized void endW(Actor arg0) throws InterruptedException {
+	public void endW(Actor arg0) throws InterruptedException {
+		lock.lock();
+		obs.releaseResource(arg0, this);
 		writerPresent=false;
-		cReader.signalAll();
-		cWriter.signal();
+		if(readerPresent>0)
+			cReader.signalAll();
+		else
+			cWriter.signal();
+		lock.unlock();
 	}
 
 	@Override

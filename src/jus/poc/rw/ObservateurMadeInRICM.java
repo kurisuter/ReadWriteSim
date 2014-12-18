@@ -5,12 +5,24 @@ import jus.poc.rw.control.IObservator;
 
 public class ObservateurMadeInRICM implements IObservator{
 
-	public static ObservateurMadeInRICM pereVert = new ObservateurMadeInRICM();
+	private Controleur controleur;
+	
+	public ObservateurMadeInRICM(Controleur c)
+	{
+		this.controleur = c;
+	}
 	@Override
 	public void acquireResource(Actor arg0, IResource arg1)
 			throws ControlException {
 		System.out.println(arg0 + 	" acqueri	-> " + arg1);
-		
+		if(arg0 instanceof Writer)
+		{
+			controleur.writterInc();
+		}
+		else
+		{
+			controleur.readerInc();
+		}
 	}
 
 	@Override
@@ -23,7 +35,14 @@ public class ObservateurMadeInRICM implements IObservator{
 	public void releaseResource(Actor arg0, IResource arg1)
 			throws ControlException {
 		System.out.println(arg0 + 	" lache 	-> " + arg1);
-		
+		if(arg0 instanceof Writer)
+		{
+			controleur.writterFar();
+		}
+		else
+		{
+			controleur.readerFar();
+		}
 	}
 
 	@Override

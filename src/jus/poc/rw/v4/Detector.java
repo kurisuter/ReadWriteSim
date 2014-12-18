@@ -1,0 +1,29 @@
+package jus.poc.rw.v4;
+
+import jus.poc.rw.Actor;
+import jus.poc.rw.IResource;
+import jus.poc.rw.deadlock.DeadLockException;
+import jus.poc.rw.deadlock.IDetector;
+
+public class Detector implements IDetector {
+
+	@Override
+	public void freeResource(Actor arg0, IResource arg1) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void useResource(Actor arg0, IResource arg1) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void waitResource(Actor arg0, IResource arg1)
+			throws DeadLockException {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

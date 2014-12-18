@@ -2,8 +2,9 @@ package jus.poc.rw.v2;
 
 import jus.poc.rw.Actor;
 import jus.poc.rw.IResource;
-import jus.poc.rw.ObservateurMadeInRICM;
+import jus.poc.rw.control.IObservator;
 import jus.poc.rw.deadlock.DeadLockException;
+import jus.poc.rw.deadlock.IDetector;
 
 public class LResource implements IResource {
 
@@ -18,8 +19,9 @@ public class LResource implements IResource {
 	
 	private static int _ident=0;
 	private int ident;
+	private IObservator obs;
 	
-	public LResource(int lectureMinimal)
+	public LResource(IDetector detector, IObservator observator,int lectureMinimal)
 	{
 		this.nombreDeLecture = 0;
 		this.lectureMinimal = lectureMinimal;
@@ -27,43 +29,44 @@ public class LResource implements IResource {
 		this.writerPresent = false;
 		this.ident = LResource._ident;
 		LResource._ident++;
+		obs = observator;
 	}
 	
 	@Override
 	public synchronized void beginR(Actor arg0) throws InterruptedException,
 			DeadLockException {
-		ObservateurMadeInRICM.pereVert.requireResource(arg0, this);
+		obs.requireResource(arg0, this);
 		while(writerPresent)
 		{
 			wait();
 		}
 		nombreDeLecture++;
 		readerPresent++;
-		ObservateurMadeInRICM.pereVert.acquireResource(arg0, this);
+		obs.acquireResource(arg0, this);
 		
 	}
 	@Override
 	public synchronized void beginW(Actor arg0) throws InterruptedException,
 			DeadLockException {
-		ObservateurMadeInRICM.pereVert.requireResource(arg0, this);
+		obs.requireResource(arg0, this);
 		while(readerPresent>0 || writerPresent || nombreDeLecture < lectureMinimal)
 		{
 			wait();
 		}
 		writerPresent = true;
-		ObservateurMadeInRICM.pereVert.acquireResource(arg0, this);
+		obs.acquireResource(arg0, this);
 		
 	}
 	@Override
 	public synchronized void endR(Actor arg0) throws InterruptedException {
-		ObservateurMadeInRICM.pereVert.releaseResource(arg0, this);
+		obs.releaseResource(arg0, this);
 		readerPresent--;
 		notify();
 		
 	}
 	@Override
 	public synchronized void endW(Actor arg0) throws InterruptedException {
-		ObservateurMadeInRICM.pereVert.releaseResource(arg0, this);
+		obs.releaseResource(arg0, this);
 		writerPresent = false;
 		nombreDeLecture = 0;
 		notifyAll();
