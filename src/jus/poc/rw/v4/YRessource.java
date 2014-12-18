@@ -7,6 +7,7 @@ import jus.poc.rw.Actor;
 import jus.poc.rw.Controleur;
 import jus.poc.rw.IResource;
 import jus.poc.rw.control.IObservator;
+import jus.poc.rw.deadLock.Detector;
 import jus.poc.rw.deadlock.DeadLockException;
 import jus.poc.rw.v3.RResource;
 

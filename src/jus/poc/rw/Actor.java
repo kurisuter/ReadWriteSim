@@ -37,6 +37,8 @@ public abstract class Actor extends Thread{
 	protected int nbRessource;
 	/** liste des ressources que l'acteur attend */
 	protected LinkedList<IResource> listWaiting;
+	/**liste des ressources utilisées par l'acteur*/
+	protected LinkedList<IResource> listUsed;
 	
 	/**
 	 * Constructor
@@ -56,6 +58,7 @@ public abstract class Actor extends Thread{
 		this.observator=observator;
 		this.accessLaw = new Random();
 		listWaiting = new LinkedList<IResource>();
+		listUsed = new LinkedList<IResource>();
 	}
 	/**
 	 * the behavior of an actor accessing to a resource.
@@ -93,7 +96,7 @@ public abstract class Actor extends Thread{
 	 */
 	private void acquire() throws InterruptedException, DeadLockException{
 		Simulator.mixe(resources);
-		nbRessource = accessLaw.nextInt(resources.length);
+		nbRessource = accessLaw.nextInt(resources.length+1);
 		for(int i=0; i< nbRessource;i++)
 		{
 			acquire(resources[i]);
@@ -110,7 +113,37 @@ public abstract class Actor extends Thread{
 			release(resources[i]);
 		}
 	}
-	
+	/**
+	 * renvoie  la liste des ressources que l'acteur utilise
+	 */
+	public LinkedList<IResource> getResUsed()
+	{
+		return new LinkedList<IResource>(listUsed);
+	}
+	/**
+	 * renvoie la liste des ressource pour lesquels l'acteur attend
+	 */
+	public LinkedList<IResource> getResWaiting()
+	{
+		return new LinkedList<IResource>(listWaiting);
+	}
+	/**
+	 * ajoute la resource a liste des ressources que l'acteur utilise
+	 * @param r : la resource que l'on utilise
+	 */
+	public void addUsed(IResource r)
+	{
+		listUsed.add(r);
+	}
+	/**
+	 * retire la resource de la liste des ressources que l'acteur utilise
+	 * @param r : la resource que l'on utilise
+	 * @require : r est dans la liste
+	 */
+	public void removeUsed(IResource r)
+	{
+		listUsed.remove(r);
+	}
 	/**
 	 * ajoute la resource a liste des ressource pour lesquels l'acteur attend
 	 * @param r : la resource pour laquel on attend
