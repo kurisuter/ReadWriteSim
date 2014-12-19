@@ -35,6 +35,12 @@ public abstract class Actor extends Thread{
 	/** nombre de ressource pris sur l'instance */
 	protected int nbRessource;
 	
+	protected IResource resourcePlantante;
+	
+	public void setRessourcePlantante(IResource r)
+	{
+		resourcePlantante = r;
+	}
 	/**
 	 * Constructor
 	 * @param useLaw the gaussian law for using delay
@@ -62,7 +68,7 @@ public abstract class Actor extends Thread{
 			temporizationVacation(vacationLaw.next());
 			try {acquire();} 
 				catch (InterruptedException e) {e.printStackTrace();} 
-				catch (DeadLockException e) {e.printStackTrace();}
+				catch (DeadLockException e) {accessRank=1; this.restart(resourcePlantante);}
 			try {Thread.sleep(30);}
 				catch (InterruptedException e1) {e1.printStackTrace();}
 			temporizationUse(useLaw.next());
@@ -92,7 +98,12 @@ public abstract class Actor extends Thread{
 		nbRessource = accessLaw.nextInt(resources.length+1);
 		for(int i=0; i< nbRessource;i++)
 		{
-			acquire(resources[i]);
+			try {
+				acquire(resources[i]);				
+			} catch (DeadLockException e) { 
+				throw e;
+			}
+
 			//try{Thread.sleep(2000);}catch(InterruptedException e1){System.out.println("\nFATALITY\n");e1.printStackTrace();}
 		}
 	}
@@ -111,7 +122,13 @@ public abstract class Actor extends Thread{
 	 * @param resource the resource at the origin of the deadlock.
 	 */
 	protected void restart(IResource resource) {
-		// to be completed
+		System.out.println("Restart !!");
+		int i =-1;
+		do
+		{
+			i++;
+			try {this.release(resources[i]);} catch (InterruptedException e) {e.printStackTrace();}
+		}while(this.resources[i] != resource);
 	}
 	/**
 	 * acquisition proceeding specific to the type of actor.

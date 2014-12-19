@@ -27,37 +27,31 @@ public class Detector implements IDetector{
 	public Detector() {
 	}
 	
-	public void Detect(int indiceActor){
+	public boolean Detect(){
 		
 		ArrayList<Integer> gauche = new ArrayList<Integer>();
 		ArrayList<Integer> droite = new ArrayList<Integer>();
 		
-		if(indiceActor>firstWriter)
-		{
-			//pour tout les writer
-			for(int i =firstWriter; i<nbActor; i++)
-				for(int j=0; j<nbResource; j++)
-					if(Actor_utilise_Ressource[i][j])
-						for(int h=0; h<nbActor; h++)
-							if(Ressource_attendu_Actor[j][h])
-								{
-								gauche.add(i);
-								droite.add(h);
-								}
-		}
-		else
-		{
-			//pour tout les reader
-			for(int i=0; i<firstWriter;i++)
-				for(int j=0; j<nbResource;j++)
-					if(Actor_utilise_Ressource[i][j])
-						for(int h=firstWriter; h<nbActor;h++)
-							if(Ressource_attendu_Actor[j][h])
-								{
-								gauche.add(i);
-								droite.add(h);
-								}
-		}
+		//pour tout les writer
+		for(int i =firstWriter; i<nbActor; i++)
+			for(int j=0; j<nbResource; j++)
+				if(Actor_utilise_Ressource[i][j])
+					for(int h=0; h<nbActor; h++)
+						if(Ressource_attendu_Actor[j][h])
+							{
+							gauche.add(i);
+							droite.add(h);
+							}
+		//pour tout les reader
+		for(int i=0; i<firstWriter;i++)
+			for(int j=0; j<nbResource;j++)
+				if(Actor_utilise_Ressource[i][j])
+					for(int h=firstWriter; h<nbActor;h++)
+						if(Ressource_attendu_Actor[j][h])
+							{
+							gauche.add(i);
+							droite.add(h);
+							}
 		
 		//on cherche un couple (u,v) tq u apartient a droite et gauche, et v appartient a droite et gauche pour le meme indice
 		int indice =0;
@@ -70,11 +64,12 @@ public class Detector implements IDetector{
 			{
 				if(droite.get(i).intValue() == y && gauche.get(i).intValue() == x)
 				{
-					System.out.println("\n\n\n MORT \n\n\n");
+					return true;
 				}
 			}
 			indice++;
 		}
+		return false;
 	}
 	/**
 	 * firstR < firstW
@@ -110,7 +105,11 @@ public class Detector implements IDetector{
 	public void waitResource(Actor arg0, IResource arg1)
 			throws DeadLockException {
 		Ressource_attendu_Actor[arg1.ident()][arg0.ident()] = true;
-		Detect(arg0.ident());
+		if(Detect())
+		{
+			arg0.setRessourcePlantante(arg1);			
+			throw new DeadLockException(arg0,arg1);
+		}
 	}
 
 }

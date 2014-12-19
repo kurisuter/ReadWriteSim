@@ -20,7 +20,8 @@ public class Reader extends Actor {
 	@Override
 	protected void acquire(IResource resource) throws InterruptedException,
 			DeadLockException {
-		resource.beginR(this);
+		try{resource.beginR(this);}
+		catch(DeadLockException e){throw e;}
 	}
 
 	@Override

@@ -20,7 +20,8 @@ public class Writer extends Actor{
 	@Override
 	protected void acquire(IResource resource) throws InterruptedException,
 			DeadLockException {
-		resource.beginW(this);
+		try{resource.beginW(this);}
+		catch(DeadLockException e){throw e;}
 	}
 
 	@Override

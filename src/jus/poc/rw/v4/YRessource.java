@@ -33,7 +33,8 @@ public class YRessource implements IResource{
 	public void beginR(Actor arg0) throws InterruptedException,
 			DeadLockException {
 		obs.requireResource(arg0, this);
-		detector.waitResource(arg0, this);
+		try{detector.waitResource(arg0, this);}
+		catch(DeadLockException e){throw e;}
 		Mutex.acquire();
 
 		if(nbLect == 0)
@@ -49,7 +50,8 @@ public class YRessource implements IResource{
 	public void beginW(Actor arg0) throws InterruptedException,
 			DeadLockException {
 		obs.requireResource(arg0, this);
-		detector.waitResource(arg0, this);
+		try{detector.waitResource(arg0, this);}
+		catch(DeadLockException e){throw e;}
 		readWrite.acquire();
 		obs.acquireResource(arg0, this);
 		detector.useResource(arg0, this);

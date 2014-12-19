@@ -2,8 +2,8 @@ package jus.poc.rw;
 
 public class Controleur {
 
-	private int nbWritter;
-	private int nbReader;
+	private int nbWritter=0;
+	private int nbReader=0;
 	
 	public void writterInc()
 	{
@@ -27,10 +27,12 @@ public class Controleur {
 	}
 	private void testCoherance()
 	{
+		if (false)
 		if ((nbWritter>0 && nbReader >0) || nbWritter>1 || nbWritter<0 || nbReader<0 ) 
 		{
 			System.out.println(
-					"Shoryu   Ken  !!!!!!!!!!!!!!!!!!!!!!!\n "+
+					nbWritter + nbReader +					
+					"\n\nShoryu   Ken  !!!!!!!!!!!!!!!!!!!!!!!\n "+
 					"┬┴┬┴┬┴┬┴┬┴┬┴┬┴┬┴┬┴┬┴┬┴┬┴┬┴┬┴┬┴┬┴┬███┬\n" +
 					"┴┬┴┬┴┬┴┬┴┬┴┬┴┬┴┬┴┬┴┬┴┬┴┬┴┬┴┬┴┬┴┬███┬┴\n" +
 					"┬┴┬┴┬┴┬┴┬┴┬┴┬┴┬┴┬┴┬┴┬┴┬┴┬┴┬┴┬████┴┬┴┬\n" +
