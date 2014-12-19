@@ -4,6 +4,7 @@ import jus.poc.rw.v1.KResource;
 import jus.poc.rw.v2.LResource;
 import jus.poc.rw.v3.RResource;
 import jus.poc.rw.v3.WResource;
+import jus.poc.rw.v4.YRessource;
 
 /**
  * Main class for the Readers/Writers application. This class firstly creates a pool of read/write resources  
@@ -115,8 +116,16 @@ public class Simulator{
 		 * Code pour la version 3 Low Writter
 		 */
 		//create & init : resources
-		RResource r1[] = new RResource[1];
-		r1[0] = new RResource(new ObservateurMadeInRICM(new Controleur()));
+		//RResource r1[] = new RResource[1];
+		//r1[0] = new RResource(new ObservateurMadeInRICM(new Controleur()));
+		
+		/**
+		 * Code pour la version 4
+		 */
+		//create & init : resources
+		YRessource r1[] = new YRessource[1];
+		r1[0] = new YRessource(null, new ObservateurMadeInRICM(new Controleur()));
+		
 		
 		/*
 		 * Les reader comme els writter represente chacun un thread

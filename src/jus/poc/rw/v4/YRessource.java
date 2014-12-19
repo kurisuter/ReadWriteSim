@@ -1,15 +1,12 @@
 package jus.poc.rw.v4;
 
-import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
 
 import jus.poc.rw.Actor;
-import jus.poc.rw.Controleur;
 import jus.poc.rw.IResource;
 import jus.poc.rw.control.IObservator;
 import jus.poc.rw.deadLock.Detector;
 import jus.poc.rw.deadlock.DeadLockException;
-import jus.poc.rw.v3.RResource;
 
 public class YRessource implements IResource{
 
@@ -23,7 +20,6 @@ public class YRessource implements IResource{
 	private IObservator obs;
 	private static int _ident;
 	private Detector detector;
-	private ArrayList<Actor> listeUser;
 	
 	public YRessource(Detector d, IObservator obse)
 	{
@@ -31,7 +27,6 @@ public class YRessource implements IResource{
 		YRessource._ident++;
 		this.obs = obse;
 		this.detector = d;
-		this.listeUser = new ArrayList<Actor>();
 	}
 	
 	@Override
