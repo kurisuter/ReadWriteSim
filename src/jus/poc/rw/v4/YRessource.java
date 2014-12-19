@@ -10,15 +10,13 @@ import jus.poc.rw.deadlock.DeadLockException;
 
 public class YRessource implements IResource{
 
-	Semaphore bloqueWriter = new Semaphore(1);
-	Semaphore bloqueReader = new Semaphore(1);
-	Semaphore MutexR = new Semaphore(1);
-	Semaphore MutexW = new Semaphore(1);
+	Semaphore readWrite = new Semaphore(1);
+	Semaphore Mutex = new Semaphore(1);
 	int nbLect = 0;
 	
 	int r=0;
 	int w=0;
-	private Object ident;
+	private int ident;
 	private IObservator obs;
 	private static int _ident;
 	private Detector detector;
@@ -34,56 +32,45 @@ public class YRessource implements IResource{
 	@Override
 	public void beginR(Actor arg0) throws InterruptedException,
 			DeadLockException {
-		MutexR.acquire();
-		
 		obs.requireResource(arg0, this);
-		//detector.waitResource(arg0, this);
-		bloqueReader.acquire();
-		obs.acquireResource(arg0, this);
-		//detector.useResource(arg0, this);
-		
+		detector.waitResource(arg0, this);
+		Mutex.acquire();
+
 		if(nbLect == 0)
-			bloqueWriter.acquire();
-		
+			readWrite.acquire();
+		obs.acquireResource(arg0, this);
+		detector.useResource(arg0, this);
 		nbLect++;
 		
-		bloqueReader.release();
-		MutexR.release();
+		Mutex.release();
 	}
 
 	@Override
 	public void beginW(Actor arg0) throws InterruptedException,
 			DeadLockException {
-		MutexW.acquire();
 		obs.requireResource(arg0, this);
-		//detector.waitResource(arg0, this);
-		bloqueWriter.acquire();
-		//detector.useResource(arg0, this);
+		detector.waitResource(arg0, this);
+		readWrite.acquire();
 		obs.acquireResource(arg0, this);
-		
-		bloqueReader.acquire();
+		detector.useResource(arg0, this);
 	}
 
 	@Override
 	public void endR(Actor arg0) throws InterruptedException {
-		MutexR.acquire();
-		
-		//detector.freeResource(arg0, this);
+		Mutex.acquire();
 		obs.releaseResource(arg0, this);
+		detector.freeResource(arg0, this);
 		nbLect--;
 		if(nbLect==0)
-			bloqueWriter.release();
-		
-		MutexR.release();
+			readWrite.release();
+		Mutex.release();
 	}
 
 	@Override
 	public void endW(Actor arg0) throws InterruptedException {
 		obs.releaseResource(arg0, this);
-		//detector.freeResource(arg0, this);
-		bloqueWriter.release();
-		bloqueReader.release();
-		MutexW.release();
+		detector.freeResource(arg0, this);
+		readWrite.release();
 	}
 
 	@Override
@@ -98,6 +85,10 @@ public class YRessource implements IResource{
 		
 	}
 	
+	public int identifiant()
+	{
+		return ident;
+	}
 	public String toString()
 	{
 		return "n°"+ident;

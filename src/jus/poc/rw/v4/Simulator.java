@@ -131,7 +131,7 @@ public class Simulator{
 					r1, null);
 			la[nbReaders+i]=a;
 		}
-		d.init(la, r);
+		d.init(la,r,nbReaders);
 		for (int i = 0; i<la.length;i++){
 			new Thread(la[i]).start();
 		}

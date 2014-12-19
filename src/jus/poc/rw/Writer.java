@@ -28,6 +28,10 @@ public class Writer extends Actor{
 		resource.endW(this);
 	}
 
+	public int identifiant()
+	{
+		return ident;
+	}
 	public String toString()
 	{
 		return "Writer	" + ident; 

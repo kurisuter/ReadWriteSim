@@ -28,6 +28,10 @@ public class Reader extends Actor {
 		resource.endR(this);
 	}
 
+	public int Identifiant()
+	{
+		return ident;
+	}
 	public String toString()
 	{
 		return "Reader	" + ident; 

@@ -3,7 +3,6 @@
  */
 package jus.poc.rw;
 
-import java.awt.List;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -35,10 +34,6 @@ public abstract class Actor extends Thread{
 	protected Random accessLaw;
 	/** nombre de ressource pris sur l'instance */
 	protected int nbRessource;
-	/** liste des ressources que l'acteur attend */
-	protected LinkedList<IResource> listWaiting;
-	/**liste des ressources utilisées par l'acteur*/
-	protected LinkedList<IResource> listUsed;
 	
 	/**
 	 * Constructor
@@ -57,8 +52,6 @@ public abstract class Actor extends Thread{
 		setName(getClass().getSimpleName()+"-"+ident());
 		this.observator=observator;
 		this.accessLaw = new Random();
-		listWaiting = new LinkedList<IResource>();
-		listUsed = new LinkedList<IResource>();
 	}
 	/**
 	 * the behavior of an actor accessing to a resource.
@@ -100,7 +93,7 @@ public abstract class Actor extends Thread{
 		for(int i=0; i< nbRessource;i++)
 		{
 			acquire(resources[i]);
-			try{Thread.sleep(2000);}catch(InterruptedException e1){System.out.println("\nFATALITY\n");e1.printStackTrace();}
+			//try{Thread.sleep(2000);}catch(InterruptedException e1){System.out.println("\nFATALITY\n");e1.printStackTrace();}
 		}
 	}
 	/**
@@ -113,56 +106,6 @@ public abstract class Actor extends Thread{
 			release(resources[i]);
 		}
 	}
-	/**
-	 * renvoie  la liste des ressources que l'acteur utilise
-	 */
-	public LinkedList<IResource> getResUsed()
-	{
-		return new LinkedList<IResource>(listUsed);
-	}
-	/**
-	 * renvoie la liste des ressource pour lesquels l'acteur attend
-	 */
-	public LinkedList<IResource> getResWaiting()
-	{
-		return new LinkedList<IResource>(listWaiting);
-	}
-	/**
-	 * ajoute la resource a liste des ressources que l'acteur utilise
-	 * @param r : la resource que l'on utilise
-	 */
-	public void addUsed(IResource r)
-	{
-		listUsed.add(r);
-	}
-	/**
-	 * retire la resource de la liste des ressources que l'acteur utilise
-	 * @param r : la resource que l'on utilise
-	 * @require : r est dans la liste
-	 */
-	public void removeUsed(IResource r)
-	{
-		listUsed.remove(r);
-	}
-	/**
-	 * ajoute la resource a liste des ressource pour lesquels l'acteur attend
-	 * @param r : la resource pour laquel on attend
-	 */
-	public void addWaiting(IResource r)
-	{
-		listWaiting.add(r);
-	}
-	
-	/**
-	 * retire la resource de la liste des ressources pour lesquels l'acteur attend
-	 * @param r : la resource pour laquel on attend plus
-	 * @require : r est dans la liste
-	 */
-	public void removeWaiting(IResource r)
-	{
-		listWaiting.remove(r);
-	}
-	
 	/**
 	 * Restart the actor at the start of his execution, having returned all the resources acquired.
 	 * @param resource the resource at the origin of the deadlock.
