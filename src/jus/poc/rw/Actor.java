@@ -63,7 +63,6 @@ public abstract class Actor extends Thread{
 	 * the behavior of an actor accessing to a resource.
 	 */
 	public void run(){
-		// to be completed
 		for(accessRank=1; accessRank!=nbIteration; accessRank++) {
 			temporizationVacation(vacationLaw.next());
 			try {acquire();} 

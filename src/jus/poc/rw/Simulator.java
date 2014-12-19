@@ -94,38 +94,48 @@ public class Simulator{
 		/**
 		 * Code pour la version 1
 		 */
+		IResource r1[];
 		// create & init : resources
-		//KResource r1[] = new KResource[1];
-		//r1[0] = new KResource(null, new ObservateurMadeInRICM(new Controleur()));
-		
+		if(version.equals(new String("v1")))
+		{
+		r1 = new KResource[1];
+		r1[0] = new KResource(null, new ObservateurMadeInRICM(new Controleur()));
+		}
 		/**
 		 * Code pour la version 2
 		 */
 		// create & init : resources
-		//LResource r1[] = new LResource[1];
-		//r1[0] = new LResource(null, new ObservateurMadeInRICM(new Controleur()),4);
-		
+		else if(version.equals(new String("v2")))
+		{
+		r1 = new LResource[1];
+		r1[0] = new LResource(null, new ObservateurMadeInRICM(new Controleur()),4);
+		}
 		/**
 		 * Code pour la version 3 High Writter
 		 */
 		// create & init : resources
-		//WResource r1[] = new WResource[1];
-		//r1[0] = new WResource(null, new ObservateurMadeInRICM(new Controleur()));
-		
+		else if(version.equals(new String("v31")))
+		{
+		r1 = new WResource[1];
+		r1[0] = new WResource(null, new ObservateurMadeInRICM(new Controleur()));
+		}
 		/**
 		 * Code pour la version 3 Low Writter
 		 */
 		//create & init : resources
-		//RResource r1[] = new RResource[1];
-		//r1[0] = new RResource(new ObservateurMadeInRICM(new Controleur()));
-		
+		else if(version.equals(new String("v32")))
+		{
+		r1 = new RResource[1];
+		r1[0] = new RResource(new ObservateurMadeInRICM(new Controleur()));
+		}
 		/**
 		 * Code pour la version 4
 		 */
 		//create & init : resources
-		YRessource r1[] = new YRessource[1];
+		else{
+		r1 = new YRessource[1];
 		r1[0] = new YRessource(null, new ObservateurMadeInRICM(new Controleur()));
-		
+		}		
 		
 		/*
 		 * Les reader comme els writter represente chacun un thread

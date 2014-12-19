@@ -35,15 +35,16 @@ public class YRessource implements IResource{
 		obs.requireResource(arg0, this);
 		try{detector.waitResource(arg0, this);}
 		catch(DeadLockException e){throw e;}
-		Mutex.acquire();
+		Mutex.acquire(); //on acquire le mutex pour eviter de changer les variables en paralele
 
-		if(nbLect == 0)
-			readWrite.acquire();
+		if(nbLect == 0) //si aucun lecteur est present
+			readWrite.acquire(); //on fait un acquire sur le semaphore commun pour le writer et les lecteurs
+			//bloquant si un writer est present, et comme on a le mutex, bloquant pour tout les reader qui demande la ressource
 		obs.acquireResource(arg0, this);
 		detector.useResource(arg0, this);
-		nbLect++;
+		nbLect++; //on incremente le nombre de reader
 		
-		Mutex.release();
+		Mutex.release(); //on libere le mutex
 	}
 
 	@Override
@@ -52,7 +53,7 @@ public class YRessource implements IResource{
 		obs.requireResource(arg0, this);
 		try{detector.waitResource(arg0, this);}
 		catch(DeadLockException e){throw e;}
-		readWrite.acquire();
+		readWrite.acquire(); //on acquire le semaphore commun, bloquant si il y a des readers
 		obs.acquireResource(arg0, this);
 		detector.useResource(arg0, this);
 	}
@@ -62,9 +63,9 @@ public class YRessource implements IResource{
 		Mutex.acquire();
 		obs.releaseResource(arg0, this);
 		detector.freeResource(arg0, this);
-		nbLect--;
+		nbLect--; //on decremente le nombre de lecteur
 		if(nbLect==0)
-			readWrite.release();
+			readWrite.release(); //si il n'y a plus de reader on doit lacher le semaphore pour permetre au writer de la prendre
 		Mutex.release();
 	}
 
@@ -72,7 +73,7 @@ public class YRessource implements IResource{
 	public void endW(Actor arg0) throws InterruptedException {
 		obs.releaseResource(arg0, this);
 		detector.freeResource(arg0, this);
-		readWrite.release();
+		readWrite.release(); //on lache tout simplement le writer
 	}
 
 	@Override

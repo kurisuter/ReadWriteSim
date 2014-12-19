@@ -44,7 +44,7 @@ public class RResource implements IResource{
 	}
 	
 	/**
-	 * On acquire le lock pour eviter que les variables soit modifier par plusieurs thread en paralele
+	 * On acquire le lock pour eviter que les variables soit modifiées par plusieurs thread en paralele
 	 * on signal que un reader est présent, pour qu'il bloque les writer, meme si il n'acquiere pas la resource
 	 * ensuite 	si un writer est present alors on fait un await sur la condition des readers
 	 * 			sinon on on lache le lock
@@ -67,7 +67,12 @@ public class RResource implements IResource{
 	}
 
 	/**
-	 * 
+	 * On acquire le lock pour eviter que les variables soit modifiées par plusieurs thread en paralele
+	 * On verifie qu'aucun reader n'est present ou en attente, et qu'aucun writer est present
+	 * si c'est le cas on attend avec la condition du writer
+	 * sinon on signal qu'un writer est présent et on lache le lock
+	 * On est ici obliger de mettre un while, car lorsque le writer est reveiller, si un reader recuperere le lock
+	 * avant, il incrementera le nombre de readerPresent qui doit etre bloquant pour le writer
 	 */
 	@Override
 	public void beginW(Actor arg0) throws InterruptedException,
@@ -83,6 +88,11 @@ public class RResource implements IResource{
 		lock.unlock();
 	}
 
+	/**
+	 * On decremente le nombre de reader present,
+	 * si le reader était le dernier, alors on signal un writer, car un writer peut alors prendre la ressource
+	 * sinon on ne fait rien, aucun processus qui attend peut prendre la ressource
+	 */
 	@Override
 	public void endR(Actor arg0) throws InterruptedException {
 		lock.lock();
@@ -94,6 +104,11 @@ public class RResource implements IResource{
 		
 	}
 
+	/**
+	 * On met la valeur de writer a false,
+	 * si il y a des readers, alors on les reveille tous, car ils peuvent tous avoir accès a la ressource
+	 * sinon, on reveil un writer, ca il se peut qu'un writer soit en attente
+	 */
 	@Override
 	public void endW(Actor arg0) throws InterruptedException {
 		lock.lock();

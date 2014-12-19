@@ -37,6 +37,11 @@ public class WResource implements IResource{
 		obs = observator;
 	}
 	
+	/**
+	 * On acquire le lock
+	 * on verifie qu'aucun writer n'est present, si c'est le cas on fait un wait sur la condition dur reader
+	 * sinon on renseigne qu'un reader est present
+	 */
 	@Override
 	public void beginR(Actor arg0) throws InterruptedException,
 			DeadLockException {
@@ -54,6 +59,12 @@ public class WResource implements IResource{
 		lock.unlock();
 	}
 
+	/**
+	 * on recupere le lock
+	 * On renseigne directement qu'un writer demande la ressource pour bloquer les readers
+	 * On vérifie si un reader est présent, si c'est le cas, on fait un wait sur la condition du writer
+	 * sinon, on lache le lock.
+	 */
 	@Override
 	public void beginW(Actor arg0) throws InterruptedException,
 			DeadLockException {
@@ -62,14 +73,18 @@ public class WResource implements IResource{
 		writterDemande++;
 		//on peut mettre un if, ca quand un writter est reveiller alors il peut prendre la ressource, 
 		//de plus aucun reader peut changer cette contrainte
-		if(readerPresent>0)
+		if(readerPresent>0 && writterDemande>1)
 		{
 			cWriter.await();
 		}
-		writterDemande--;
 		obs.acquireResource(arg0, this);
+		lock.unlock();
 	}
 
+	/**
+	 * a la fin d'un reader, on decremente le nombre de reader
+	 * ensuite on regarde si il y a interer a signaler un writer
+	 */
 	@Override
 	public void endR(Actor arg0) throws InterruptedException {
 		lock.lock();
@@ -82,12 +97,16 @@ public class WResource implements IResource{
 		
 	}
 
+	/**
+	 * 	si il n'y a pas de writter en attente, on reveil tout les reader
+	 * si il y a des writter en attente, on en reveil un, les readers serait imédiatement
+	 * remit en attente donc ca sert a rien de les reveiller
+	 */
 	@Override
 	public void endW(Actor arg0) throws InterruptedException {
+		lock.lock();
 		obs.releaseResource(arg0, this);
-		//si il n'y a pas de writter en attente, on reveil tout les reader
-		//si il y a des writter en attente, on en reveil un, les readers serait imédiatement
-		//remit en attente donc ca sert a rien de les wake up
+		writterDemande--;
 		if(writterDemande ==0)
 			cReader.signalAll();
 		else

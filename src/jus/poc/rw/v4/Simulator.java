@@ -95,6 +95,11 @@ public class Simulator{
 		// set the application parameters
 		init((args.length==1)?args[0]:OPTIONFILENAME);
 		
+		/**
+		 * Un cas favorisant l'interblocage
+		 */
+		//nbResources =2;
+		//nbWriters =5;
 		
 		/*
 		 * Les reader comme els writter represente chacun un thread

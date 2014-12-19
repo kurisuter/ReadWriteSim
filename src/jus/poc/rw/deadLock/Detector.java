@@ -27,17 +27,23 @@ public class Detector implements IDetector{
 	public Detector() {
 	}
 	
+	/**
+	 * Detect renvoie vrai si il y un cycle dans le graph des dependances.
+	 * On crée pour cela les differentes arrete du graphe orienté
+	 * ensuite on vérifie qu'il n'y a pas de cycle
+	 * par manque de temps cette methode est loin d'etre optimal.
+	 */
 	public boolean Detect(){
 		
 		ArrayList<Integer> gauche = new ArrayList<Integer>();
 		ArrayList<Integer> droite = new ArrayList<Integer>();
-		
+		 
 		//pour tout les writer
 		for(int i =firstWriter; i<nbActor; i++)
-			for(int j=0; j<nbResource; j++)
-				if(Actor_utilise_Ressource[i][j])
-					for(int h=0; h<nbActor; h++)
-						if(Ressource_attendu_Actor[j][h])
+			for(int j=0; j<nbResource; j++) 
+				if(Actor_utilise_Ressource[i][j]) 
+					for(int h=0; h<nbActor; h++) 
+						if(Ressource_attendu_Actor[j][h]) 
 							{
 							gauche.add(i);
 							droite.add(h);
@@ -53,7 +59,7 @@ public class Detector implements IDetector{
 							droite.add(h);
 							}
 		
-		//on cherche un couple (u,v) tq u apartient a droite et gauche, et v appartient a droite et gauche pour le meme indice
+		//on cherche un couple (u,v) tq il existe un chemin de u à v et de v à u
 		int indice =0;
 		int dernier_indice = droite.size();
 		while(indice < dernier_indice)
