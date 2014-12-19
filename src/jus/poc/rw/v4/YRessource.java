@@ -10,8 +10,10 @@ import jus.poc.rw.deadlock.DeadLockException;
 
 public class YRessource implements IResource{
 
-	Semaphore LecRed = new Semaphore(1);
-	Semaphore MutexL = new Semaphore(1);
+	Semaphore bloqueWriter = new Semaphore(1);
+	Semaphore bloqueReader = new Semaphore(1);
+	Semaphore MutexR = new Semaphore(1);
+	Semaphore MutexW = new Semaphore(1);
 	int nbLect = 0;
 	
 	int r=0;
@@ -32,43 +34,56 @@ public class YRessource implements IResource{
 	@Override
 	public void beginR(Actor arg0) throws InterruptedException,
 			DeadLockException {
-		MutexL.acquire();
+		MutexR.acquire();
+		
 		obs.requireResource(arg0, this);
-		if(nbLect++ == 0)
-		{
-			detector.waitResource(arg0, this);
-			LecRed.acquire();
-		}
-		detector.useResource(arg0, this);
+		//detector.waitResource(arg0, this);
+		bloqueReader.acquire();
 		obs.acquireResource(arg0, this);
-		MutexL.release();
+		//detector.useResource(arg0, this);
+		
+		if(nbLect == 0)
+			bloqueWriter.acquire();
+		
+		nbLect++;
+		
+		bloqueReader.release();
+		MutexR.release();
 	}
 
 	@Override
 	public void beginW(Actor arg0) throws InterruptedException,
 			DeadLockException {
+		MutexW.acquire();
 		obs.requireResource(arg0, this);
-		detector.waitResource(arg0, this);
-		LecRed.acquire();
-		detector.useResource(arg0, this);
+		//detector.waitResource(arg0, this);
+		bloqueWriter.acquire();
+		//detector.useResource(arg0, this);
 		obs.acquireResource(arg0, this);
+		
+		bloqueReader.acquire();
 	}
 
 	@Override
 	public void endR(Actor arg0) throws InterruptedException {
-		MutexL.acquire();
-		detector.freeResource(arg0, this);
+		MutexR.acquire();
+		
+		//detector.freeResource(arg0, this);
 		obs.releaseResource(arg0, this);
-		if(--nbLect==0)
-			LecRed.release();
-		MutexL.release();
+		nbLect--;
+		if(nbLect==0)
+			bloqueWriter.release();
+		
+		MutexR.release();
 	}
 
 	@Override
 	public void endW(Actor arg0) throws InterruptedException {
 		obs.releaseResource(arg0, this);
-		detector.freeResource(arg0, this);
-		LecRed.release();
+		//detector.freeResource(arg0, this);
+		bloqueWriter.release();
+		bloqueReader.release();
+		MutexW.release();
 	}
 
 	@Override

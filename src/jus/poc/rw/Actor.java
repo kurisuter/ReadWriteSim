@@ -100,7 +100,7 @@ public abstract class Actor extends Thread{
 		for(int i=0; i< nbRessource;i++)
 		{
 			acquire(resources[i]);
-			try{Thread.sleep(2000);}catch(InterruptedException e1){e1.printStackTrace();}
+			try{Thread.sleep(2000);}catch(InterruptedException e1){System.out.println("\nFATALITY\n");e1.printStackTrace();}
 		}
 	}
 	/**
