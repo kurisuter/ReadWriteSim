@@ -10,17 +10,26 @@ import jus.poc.rw.deadlock.IDetector;
 
 public class KResource implements IResource{
 	private ReentrantReadWriteLock lock;
+	/**
+	 * pour la numerotation de a ressource
+	 */
 	private static int _ident=0;
 	private int ident;
+	
+	//observateur
 	private IObservator obs;
 	
 	public KResource(IDetector detector, IObservator observator) {
+		//on instancie notre reentrant read write lock avec une politique fair
  		lock = new ReentrantReadWriteLock(true);
 		this.ident = KResource._ident;
 		KResource._ident++;
 		obs = observator;
 	}
 	
+	/**
+	 * On fait juste le lock du readLock qui respect les contrainte demande
+	 */
 	@Override
 	public void beginR(Actor arg0) throws InterruptedException,
 			DeadLockException {
@@ -30,6 +39,9 @@ public class KResource implements IResource{
 		
 	}
 
+	/**
+	 * On fait juste le lock du writeLock qui respect les contrainte demande
+	 */
 	@Override
 	public void beginW(Actor arg0) throws InterruptedException,
 			DeadLockException {
@@ -39,13 +51,19 @@ public class KResource implements IResource{
 		
 	}
 
+	/**
+	 * On fait juste le unlock du readLock qui respect les contrainte demande
+	 */
 	@Override
 	public void endR(Actor arg0) throws InterruptedException {
 		obs.releaseResource(arg0, this);
 		this.lock.readLock().unlock();
 		
 	}
-
+	
+	/**
+	 * On fait juste le unlock du writeLock qui respect les contrainte demande
+	 */
 	@Override
 	public void endW(Actor arg0) throws InterruptedException {
 		obs.releaseResource(arg0, this);
@@ -60,10 +78,9 @@ public class KResource implements IResource{
 
 	@Override
 	public void init(Object arg0) throws UnsupportedOperationException {
-		// TODO Auto-generated method stub
-		
 	}
 	
+	//pour l'affichage
 	public String toString()
 	{
 		return "n°"+ident;

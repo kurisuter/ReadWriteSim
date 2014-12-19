@@ -9,7 +9,14 @@ import jus.poc.rw.IResource;
 import jus.poc.rw.control.IObservator;
 import jus.poc.rw.deadlock.DeadLockException;
 
-//priorité faible pour les lecteurs
+/**
+ * Priorité faible pour les lecteurs
+ * 
+ * Description :
+ * 		Un writer ne peut prendre la ressource que si aucun reader ne la demande et est en attente
+ * ce qui arrive lorsqu'un writer a pris la resource
+ *
+ */
 public class RResource implements IResource{
 	
 	
@@ -18,24 +25,33 @@ public class RResource implements IResource{
 	private IObservator obs;
 	
 	//nombre de reader présent
-	private int readerPresent;
+	private int readerPresent=0;
 	//boolean si writer présent
-	private boolean writerPresent;
+	private boolean writerPresent=false;
 	
+	//le lock commun aux writer et aux reader 
 	private final Lock lock = new ReentrantLock();
+	//Condition pour le reader
 	private Condition cReader = lock.newCondition();
+	//Condition pour le writer
 	private Condition cWriter = lock.newCondition();
-	
 	
 	public RResource(IObservator obse)
 	{
-		this.readerPresent = 0;
-		this.writerPresent = false;
 		this.ident = RResource._ident;
 		RResource._ident++;
 		this.obs = obse;
 	}
 	
+	/**
+	 * On acquire le lock pour eviter que les variables soit modifier par plusieurs thread en paralele
+	 * on signal que un reader est présent, pour qu'il bloque les writer, meme si il n'acquiere pas la resource
+	 * ensuite 	si un writer est present alors on fait un await sur la condition des readers
+	 * 			sinon on on lache le lock
+	 * On peut mettre un if, car on sait que lorsque le reader sera reveiller, un writer ne pourra pas modifier
+	 * la valeur de writerPresent car la valeur de readerPresent a était incrementer, et donc le writer
+	 * sera bloqué 
+	 */
 	@Override
 	public void beginR(Actor arg0) throws InterruptedException,
 			DeadLockException {
@@ -50,6 +66,9 @@ public class RResource implements IResource{
 		lock.unlock();
 	}
 
+	/**
+	 * 
+	 */
 	@Override
 	public void beginW(Actor arg0) throws InterruptedException,
 			DeadLockException {
