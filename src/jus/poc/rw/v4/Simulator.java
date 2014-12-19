@@ -129,7 +129,7 @@ public class Simulator{
 					new Aleatory(writerAverageVacationTime, writerDeviationVacationTime),
 					new Aleatory(writerAverageUsingTime,writerDeviationUsingTime),
 					r1, null);
-			la[nbReaders-1+i]=a;
+			la[nbReaders+i]=a;
 		}
 		d.init(la, r);
 		for (int i = 0; i<la.length;i++){
